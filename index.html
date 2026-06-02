@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songlay965 - HR & Payroll System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg-base: #0f172a;
+            --bg-panel: rgba(30, 41, 59, 0.7);
+            --bg-panel-hover: rgba(51, 65, 85, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top left, #1e1b4b, #0f172a, #020617);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* ===== LOGIN PAGE ===== */
+        #login-page {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top left, #1e1b4b, #0f172a, #020617);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: var(--bg-panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--glass-shadow);
+            text-align: center;
+        }
+
+        .login-logo {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--glass-border);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--glass-shadow);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1001;
+            background: var(--primary);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 3rem;
+            padding: 0 10px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-panel-hover);
+            color: var(--text-main);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            color: var(--primary);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 2rem 3rem;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .section {
+            display: none;
+            animation: fadeSlideUp 0.4s ease-out forwards;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header { margin-bottom: 2rem; }
+        .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 5px; }
+        .header p { color: var(--text-muted); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) { .main-content { padding: 2rem; } }
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .mobile-toggle { display: flex; }
+            .sidebar {
+                position: fixed; left: -260px; top: 0; bottom: 0; width: 260px; padding-top: 5rem;
+            }
+            .sidebar.open { left: 0; }
+            .main-content { padding: 1.5rem; padding-top: 5rem; }
+            .header h1 { font-size: 22px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .modal-content { width: 95%; padding: 1.5rem; margin: 10px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .btn { width: 100%; justify-content: center; }
+            .card-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 20px; }
+        }
+
+        /* ===== GLASS CARDS ===== */
+        .glass-card {
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--glass-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;
+        }
+
+        .card-title { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .card-title i { color: var(--primary); }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+            border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: -50%; right: -50%; width: 100px; height: 100px;
+            background: var(--primary); filter: blur(80px); opacity: 0.3; border-radius: 50%;
+        }
+        .stat-label { color: var(--text-muted); font-size: 14px; margin-bottom: 8px; }
+        .stat-value { font-size: 28px; font-weight: 700; color: var(--text-main); }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; border: none; outline: none;
+            font-family: 'Sarabun', sans-serif;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); color: var(--text-main); border: 1px solid var(--glass-border); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.4); }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+
+        .flex-responsive { display: flex; gap: 15px; }
+        @media (max-width: 768px) { .flex-responsive { flex-direction: column; } }
+
+        /* ===== TABLES ===== */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 16px; color: var(--text-muted); font-weight: 500; font-size: 14px; border-bottom: 1px solid var(--glass-border); }
+        td { padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; vertical-align: middle; }
+        tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .badge.active { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge.probation { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge.leave { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        /* ===== FORMS ===== */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 13px; color: var(--text-muted); }
+        .form-control {
+            background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); color: var(--text-main);
+            padding: 10px 14px; border-radius: 10px; font-size: 14px; font-family: 'Sarabun', sans-serif; transition: all 0.3s;
+        }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); outline: none; }
+        select.form-control option { background: #1e293b; color: white; }
+
+        /* ===== PACKAGE CARDS ===== */
+        .pkg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+        .pkg-card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.6) 100%);
+            border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; position: relative; transition: all 0.3s;
+        }
+        .pkg-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .pkg-card.featured { border: 1px solid var(--primary); box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.1); }
+        .pkg-rank {
+            position: absolute; top: -10px; right: -10px; background: var(--accent); color: white; padding: 4px 12px;
+            border-radius: 20px; font-size: 11px; font-weight: bold; box-shadow: 0 4px 10px rgba(139, 92, 246, 0.5);
+        }
+        .pkg-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .pkg-price { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 8px; text-shadow: 0 0 10px var(--primary-glow); }
+        .pkg-com { font-size: 13px; color: var(--text-muted); margin-bottom: 12px;}
+        
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
+            z-index: 100; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        .modal-content {
+            background: #1e293b; border: 1px solid var(--glass-border); border-radius: 20px; padding: 2rem;
+            width: 100%; max-width: 600px; transform: scale(0.9); transition: transform 0.3s ease; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+        
+        /* ===== RESULT PREVIEW ===== */
+        .result-box { background: rgba(15, 23, 42, 0.5); border: 1px dashed var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; }
+        .com-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .text-green { color: #34d399; }
+        .text-red { color: #f87171; }
+        
+        /* ===== HIDDEN PDF TEMPLATE ===== */
+        #pdf-export-container { display: none; }
+        #pdf-template {
+            font-family: 'Sarabun', sans-serif; width: 750px; padding: 40px; background: white; color: black; margin: 0; 
+        }
+        .pdf-table { width: 100%; border-collapse: collapse; border: 1px solid black; margin-bottom: 20px; }
+        .pdf-table th, .pdf-table td { border: 1px solid black; padding: 10px 15px; font-size: 16px; }
+        .pdf-table th { text-align: center; background-color: #f9f9f9; color: black; }
+        .pdf-table .amount { text-align: right; }
+        .pdf-total-row { font-weight: bold; background-color: #f0f0f0; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div id="login-page">
+        <div class="login-card">
+            <i class="ti ti-hexagon-letter-s login-logo"></i>
+            <h2 style="margin-bottom: 0.5rem;">Songlay965 HR</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">เข้าสู่ระบบจัดการบุคลากร</p>
+            
+            <div class="form-group" style="margin-bottom: 1rem; text-align: left;">
+                <label>ชื่อผู้ใช้งาน</label>
+                <input type="text" id="login-user" class="form-control" placeholder="Admin หรือ ชื่อพนักงาน">
+            </div>
+            <div class="form-group" style="margin-bottom: 2rem; text-align: left;">
+                <label>รหัสผ่าน</label>
+                <input type="password" id="login-pass" class="form-control" placeholder="••••••••" onkeypress="if(event.key === 'Enter') doLogin()">
+            </div>
+            
+            <button class="btn btn-primary" onclick="doLogin()" style="width: 100%; justify-content: center; padding: 12px;">
+                เข้าสู่ระบบ
+            </button>
+            <p id="login-err" style="color: var(--danger); font-size: 13px; margin-top: 1rem; display: none;">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</p>
+        </div>
+    </div>
+
+    <div class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="ti ti-menu-2" id="menu-icon"></i>
+    </div>
+
+    <div class="sidebar" id="sidebar" style="display: none;">
+        <div class="logo-area">
+            <i class="ti ti-hexagon-letter-s logo-icon"></i>
+            <div class="logo-text">Songlay965</div>
+        </div>
+
+        <div id="admin-nav" style="display: none;">
+            <div class="nav-item active" onclick="switchTab('dashboard', this)">
+                <i class="ti ti-layout-dashboard"></i> แดชบอร์ด
+            </div>
+            <div class="nav-item" onclick="switchTab('employees', this)">
+                <i class="ti ti-users"></i> จัดการพนักงาน
+            </div>
+            <div class="nav-item" onclick="switchTab('approvals', this)">
+                <i class="ti ti-checkbox"></i> อนุมัติข้อมูล <span id="pending-badge" class="badge" style="background: var(--danger); display: none;">0</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('attendance', this)">
+                <i class="ti ti-calendar-stats"></i> บันทึกการมาสาย
+            </div>
+            <div class="nav-item" onclick="switchTab('rules', this)">
+                <i class="ti ti-settings"></i> กฎบริษัท
+            </div>
+            <div class="nav-item" onclick="switchTab('packages', this)">
+                <i class="ti ti-packages"></i> แพ็คเกจ & เซลล์
+            </div>
+            <div class="nav-item" onclick="switchTab('payroll', this)">
+                <i class="ti ti-receipt-tax"></i> สร้างสลิปเงินเดือน
+            </div>
+        </div>
+
+        <div id="emp-nav" style="display: none;">
+            <div class="nav-item active" onclick="switchTab('emp-sales', this)">
+                <i class="ti ti-report-money"></i> ยอดขาย
+            </div>
+        </div>
+
+        <div style="margin-top: auto; padding-top: 2rem;">
+            <div id="user-info" style="padding: 10px; margin-bottom: 10px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--glass-border);">
+                Logged in as: <strong id="current-user-display" style="color: var(--text-main)">-</strong>
+            </div>
+            <div class="nav-item" onclick="doLogout()" style="color: var(--danger);">
+                <i class="ti ti-logout"></i> ออกจากระบบ
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content" style="display: none;">
+        
+        <div id="tab-dashboard" class="section">
+            <div class="header">
+                <h1>แดชบอร์ดภาพรวม</h1>
+                <p>สรุปข้อมูลบุคลากรและค่าใช้จ่ายของบริษัท</p>
+            </div>
+            
+            <div class="stats-grid" id="emp-stats"></div>
+
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-chart-bar"></i> สรุปการดำเนินงาน (Quick Overview)</div>
+                </div>
+                <p style="color: var(--text-muted); line-height: 1.8;">
+                    ยินดีต้อนรับสู่ระบบ HR & Payroll ยุคใหม่ คุณสามารถจัดการข้อมูลพนักงาน กำหนดอัตราหัก/เพิ่มของบริษัท และคำนวณค่าคอมมิชชันจากการขายแพ็คเกจได้อย่างง่ายดาย ระบบจะคำนวณภาษี ประกันสังคม และหักลบกลบหนี้ให้อัตโนมัติ พร้อมส่งออกเป็น PDF สลิปเงินเดือนที่เป็นทางการทันที
+                </p>
+            </div>
+        </div>
+
+        <div id="tab-approvals" class="section">
+            <div class="header">
+                <h1>อนุมัติข้อมูลพนักงาน</h1>
+                <p>ตรวจสอบและอนุมัติยอดขาย/ค่าคอมมิชชันที่พนักงานส่งมา</p>
+            </div>
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-clock-check"></i> รายการรออนุมัติ</div>
+                </div>
+                <div id="approval-table-wrap" style="overflow-x: auto;"></div>
+            </div>
+        </div>
+
+        <div id="tab-emp-sales" class="section">
+            <div class="header">
+                <h1>ยอดขาย</h1>
+                <p>ส่งยอดขายแพ็คเกจในที่เดียว</p>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-package-export"></i> บันทึกยอดขายประจำเดือน</div>
+                    <span id="es-submit-status" style="font-size:13px; color:var(--text-muted);"></span>
+                </div>
+                <div class="form-grid" style="margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label>ประจำเดือน</label>
+                        <input type="text" id="es-month" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>เลือกแพ็คเกจที่ขายได้</label>
+                        <select id="es-pkg" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>จำนวน</label>
+                        <input type="number" id="es-qty" value="1" min="1" class="form-control">
+                    </div>
+                    <div class="form-group" style="align-self: end;">
+                        <button class="btn btn-secondary" onclick="addEsItem()" style="width:100%; justify-content: center;">
+                            <i class="ti ti-plus"></i> เพิ่มรายการ
+                        </button>
+                    </div>
+                </div>
+                <div id="es-items-wrap"></div>
+                <div id="es-summary-box" class="result-box" style="display:none; margin-top:1rem;"></div>
+                <div class="flex-responsive" style="margin-top:1.5rem;">
+                    <button class="btn btn-primary" onclick="calcAndShowEsSummary()" style="flex:1; justify-content:center;">
+                        <i class="ti ti-calculator"></i> คำนวณค่าคอมมิชชัน
+                    </button>
+                    <button class="btn btn-success" id="btn-es-submit" onclick="submitEs()" style="flex:1; justify-content:center;">
+                        <i class="ti ti-send"></i> ส่งยอดขายเพื่อขออนุมัติ
+                    </button>
+                    <button class="btn btn-danger" onclick="clearEsItems()">ล้างรายการ</button>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-history"></i> ประวัติยอดขายที่ส่ง</div>
+                </div>
+                <div id="es-history-wrap"><p style="color:var(--text-muted);text-align:center;padding:20px;">ยังไม่มีประวัติ</p></div>
+            </div>
+        </div>
+
+        <div id="tab-employees" class="section">
+            <div class="header">
+                <h1>รายชื่อพนักงาน</h1>
+                <p>จัดการข้อมูลส่วนตัว เงินเดือน และสถานะของพนักงาน</p>
+            </div>
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-users-group"></i> ข้อมูลพนักงาน</div>
+                    <button class="btn btn-primary" onclick="openModal('modal-emp', event)">
+                        <i class="ti ti-user-plus"></i> เพิ่มพนักงานใหม่
+                    </button>
+                </div>
+                <div id="emp-table-wrap" style="overflow-x: auto;"></div>
+            </div>
+        </div>
+
+        <div id="tab-attendance" class="section">
+            <div class="header">
+                <h1>บันทึกการมาสาย (Attendance Log)</h1>
+                <p>จดบันทึกรายชื่อพนักงานที่มาสายเพื่อนำไปคำนวณเงินเดือน</p>
+            </div>
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-clock-edit"></i> เพิ่มบันทึกใหม่</div>
+                </div>
+                <div class="form-grid" style="align-items: end;">
+                    <div class="form-group">
+                        <label>เลือกพนักงาน</label>
+                        <select id="att-emp" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>วันที่</label>
+                        <input type="date" id="att-date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>ประเภทการสาย</label>
+                        <select id="att-type" class="form-control">
+                            <option value="1">สาย 1-10 นาที</option>
+                            <option value="2">สาย 11-30 นาที</option>
+                            <option value="3">สาย 31-60 นาที</option>
+                            <option value="4">สาย >60 นาที (ขาดงาน)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="addAttendance()" style="width: 100%; justify-content: center;">
+                            <i class="ti ti-plus"></i> บันทึกข้อมูล
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-list-details"></i> รายการบันทึกการมาสาย</div>
+                </div>
+                <div id="att-table-wrap" style="overflow-x: auto;"></div>
+            </div>
+        </div>
+
+        <div id="tab-rules" class="section">
+            <div class="header">
+                <h1>กฎบริษัท (Company Rules)</h1>
+                <p>ตั้งค่าการหักเงิน การปรับ และสวัสดิการต่างๆ</p>
+            </div>
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-adjustments"></i> ปรับแต่งตัวแปรการคำนวณ</div>
+                    <button class="btn btn-primary" id="save-rules-btn" onclick="saveRules()">
+                        <i class="ti ti-device-floppy"></i> บันทึกกฎ
+                    </button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group"><label>ค่าปรับขาดงาน (บาท/วัน)</label><input type="number" id="r-absent" class="form-control"></div>
+                    <div class="form-group"><label>ปรับสาย 1-10 นาที (บาท)</label><input type="number" id="r-late1" class="form-control"></div>
+                    <div class="form-group"><label>ปรับสาย 11-30 นาที (บาท)</label><input type="number" id="r-late2" class="form-control"></div>
+                    <div class="form-group"><label>ปรับสาย 31-60 นาที (บาท)</label><input type="number" id="r-late3" class="form-control"></div>
+                    <div class="form-group"><label>วันลาป่วยได้สูงสุด (วัน/ปี)</label><input type="number" id="r-sick" class="form-control"></div>
+                    <div class="form-group"><label>วันลากิจได้สูงสุด (วัน/ปี)</label><input type="number" id="r-personal" class="form-control"></div>
+                    <div class="form-group"><label>หักประกันสังคม (%)</label><input type="number" id="r-sso" class="form-control"></div>
+                    <div class="form-group"><label>ภาษี / หักเงินเดือน (%)</label><input type="number" id="r-sal3" class="form-control"></div>
+                    <div class="form-group"><label>เรทค่าล่วงเวลา OT (เท่าของรายชั่วโมง)</label><input type="number" id="r-ot" step="0.5" class="form-control"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-packages" class="section">
+            <div class="header">
+                <h1>แพ็คเกจ & ค่าคอมมิชชัน</h1>
+                <p>จัดการรายการสินค้า/บริการ และคำนวณยอดขายให้เซลล์</p>
+            </div>
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-box"></i> รายการแพ็คเกจที่มี</div>
+                    <button class="btn btn-primary" onclick="openModal('modal-pkg', event)">
+                        <i class="ti ti-square-plus"></i> เพิ่มแพ็คเกจ
+                    </button>
+                </div>
+                <div id="pkg-grid" class="pkg-grid"></div>
+            </div>
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title"><i class="ti ti-calculator"></i> คำนวณค่าคอมมิชชัน</div>
+                </div>
+                <div class="form-grid" style="align-items: end; margin-bottom: 1.5rem;">
+                    <div class="form-group"><label>เลือกพนักงานขาย</label><select id="com-emp" class="form-control"></select></div>
+                    <div class="form-group"><label>เลือกแพ็คเกจที่ขายได้</label><select id="com-pkg" class="form-control"></select></div>
+                    <div class="form-group"><label>จำนวน (ชิ้น/ออเดอร์)</label><input type="number" id="com-qty" value="1" min="1" class="form-control"></div>
+                    <div class="form-group">
+                        <button class="btn btn-secondary" onclick="addComItem()" style="width: 100%; justify-content: center;">
+                            <i class="ti ti-plus"></i> เพิ่มลงรายการ
+                        </button>
+                    </div>
+                </div>
+                <div id="com-items-wrap"></div>
+                <div class="flex-responsive" style="margin-top: 1.5rem;">
+                    <button class="btn btn-primary" onclick="calcCom()"><i class="ti ti-cash-banknote"></i> สรุปค่าคอมมิชชัน</button>
+                    <button class="btn btn-danger" onclick="clearComItems()">ล้างรายการ</button>
+                </div>
+                <div id="com-result"></div>
+            </div>
+        </div>
+
+        <div id="tab-payroll" class="section">
+            <div class="header">
+                <h1>สร้างสลิปเงินเดือน (Payslip Generator)</h1>
+                <p>รวบรวมข้อมูลทั้งหมดและออกเอกสาร PDF อย่างเป็นทางการ</p>
+            </div>
+            <div class="glass-card">
+                <div class="form-grid" style="margin-bottom: 1.5rem;" id="payroll-form-grid">
+                    <div class="form-group"><label>เลือกพนักงาน</label><select id="pay-emp" class="form-control" onchange="autoFillCom()"></select></div>
+                    <div class="form-group"><label>ประจำเดือน (เช่น มีนาคม 2569)</label><input type="text" id="pay-month" class="form-control" placeholder="เดือน พ.ศ."></div>
+                    <div class="form-group"><label>ขาดงาน (วัน)</label><input type="number" id="pay-absent" value="0" min="0" class="form-control"></div>
+                    <div class="form-group"><label>สาย 1-10 นาที (ครั้ง)</label><input type="number" id="pay-late-1" value="0" min="0" class="form-control"></div>
+                    <div class="form-group"><label>สาย 11-30 นาที (ครั้ง)</label><input type="number" id="pay-late-2" value="0" min="0" class="form-control"></div>
+                    <div class="form-group"><label>สาย 31-60 นาที (ครั้ง)</label><input type="number" id="pay-late-3" value="0" min="0" class="form-control"></div>
+                    <div class="form-group"><label>สาย >60 นาที (ครั้ง)</label><input type="number" id="pay-late-4" value="0" min="0" class="form-control"></div>
+                    <div class="form-group"><label>ชั่วโมง OT (ชม.)</label><input type="number" id="pay-ot" value="0" min="0" class="form-control"></div>
+                    <div class="form-group"><label>ยอดรวมค่าคอมมิชชัน (บาท)</label><input type="number" id="pay-com" value="0" min="0" class="form-control"></div>
+                    <div class="form-group"><label>รายได้อื่นๆ (โบนัส, เบี้ยเลี้ยง) (บาท)</label><input type="number" id="pay-other" value="0" min="0" class="form-control"></div>
+                </div>
+                <div class="flex-responsive" style="margin-top: 2rem;">
+                    <button class="btn btn-secondary" onclick="previewPayslip()" style="flex: 1; justify-content: center; padding: 15px;">
+                        <i class="ti ti-eye"></i> ดูตัวอย่างการคำนวณ
+                    </button>
+                    <button class="btn btn-primary" id="btn-generate-pdf" onclick="generatePDF(event)" style="flex: 1; justify-content: center; padding: 15px; display: none;">
+                        <i class="ti ti-file-download"></i> ดาวน์โหลดสลิป PDF
+                    </button>
+                </div>
+            </div>
+            <div id="payslip-preview-ui"></div>
+        </div>
+
+    </div>
+
+    <div class="modal-overlay" id="modal-emp">
+        <div class="modal-content">
+            <div class="card-header" style="margin-bottom: 1rem; border-color: rgba(255,255,255,0.1);">
+                <div class="card-title" id="modal-emp-title"><i class="ti ti-user-plus"></i> เพิ่ม/แก้ไข พนักงาน</div>
+                <i class="ti ti-x" style="cursor: pointer; color: var(--text-muted); font-size: 20px;" onclick="closeModal('modal-emp')"></i>
+            </div>
+            <div class="form-grid">
+                <div class="form-group"><label>ชื่อ-นามสกุล *</label><input id="e-name" class="form-control" placeholder="เช่น สมชาย ใจดี"></div>
+                <div class="form-group"><label>ตำแหน่ง *</label><input id="e-pos" class="form-control" placeholder="นักขาย"></div>
+                <div class="form-group"><label>แผนก</label><input id="e-dept" class="form-control" placeholder="ฝ่ายขาย"></div>
+                <div class="form-group"><label>เงินเดือนฐาน (บาท) *</label><input id="e-sal" type="number" class="form-control" placeholder="25000"></div>
+                <div class="form-group"><label>วันเริ่มงาน</label><input id="e-start" type="date" class="form-control"></div>
+                <div class="form-group">
+                    <label>สถานะ</label>
+                    <select id="e-status" class="form-control">
+                        <option value="active">ทำงานอยู่</option>
+                        <option value="probation">ทดลองงาน</option>
+                        <option value="leave">ลาออก</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Username *</label><input id="e-user" class="form-control" placeholder="admin"></div>
+                <div class="form-group"><label>Password *</label><input id="e-pass" class="form-control" placeholder="1234"></div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="e-role" class="form-control">
+                        <option value="emp">Employee</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem;">
+                <button class="btn btn-secondary" onclick="closeModal('modal-emp')">ยกเลิก</button>
+                <button class="btn btn-primary" onclick="saveEmp()">บันทึกข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-pkg">
+        <div class="modal-content">
+            <div class="card-header" style="margin-bottom: 1rem; border-color: rgba(255,255,255,0.1);">
+                <div class="card-title" id="modal-pkg-title"><i class="ti ti-square-plus"></i> เพิ่ม/แก้ไข แพ็คเกจ</div>
+                <i class="ti ti-x" style="cursor: pointer; color: var(--text-muted); font-size: 20px;" onclick="closeModal('modal-pkg')"></i>
+            </div>
+            <div class="form-grid">
+                <div class="form-group"><label>ชื่อแพ็คเกจ *</label><input id="p-name" class="form-control" placeholder="แพ็คเกจโกลด์"></div>
+                <div class="form-group"><label>ราคา (บาท) *</label><input id="p-price" type="number" class="form-control" placeholder="10000"></div>
+                <div class="form-group"><label>อัตราค่าคอมมิชชัน (%)</label><input id="p-com" type="number" value="0" class="form-control"></div>
+                <div class="form-group"><label>ค่าคอมมิชชันต่อเคส (บาท)</label><input id="p-com-case" type="number" value="0" class="form-control"></div>
+                <div class="form-group" style="grid-column: span 2;"><label>คำอธิบาย</label><input id="p-desc" class="form-control" placeholder="รายละเอียดสั้นๆ"></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem;">
+                <button class="btn btn-secondary" onclick="closeModal('modal-pkg')">ยกเลิก</button>
+                <button class="btn btn-primary" onclick="savePkg()">บันทึกข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdf-export-container">
+        <div id="pdf-template">
+            <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 25px;">
+                <img src="Logo OK.png" alt="Company Logo" style="width: 110px; height: auto; object-fit: contain;" onerror="this.style.display='none'">
+                <div style="line-height: 1.5; color: black; max-width: 500px;">
+                    <div style="font-size: 18px; font-weight: bold;">SONGLAY 965 COMPANY LIMITED</div>
+                    <div style="font-size: 14px;">339/2, Moo 4, Bang Duea Subdistrict, Mueang Pathum Thani District,</div>
+                     <div style="font-size: 14px;">Pathum Thani Province 12000, Thailand</div>
+                    <div style="font-size: 14px;">Tax Identification Number (TIN): 0575565005197</div>
+                </div>
+            </div>
+            
+            <hr style="border-top: 2px solid black; margin-bottom: 15px;">
+            
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="font-size: 28px; margin: 0; color: black; font-weight: bold;">ใบแจ้งสลิปเงินเดือน</h2>
+                <div style="font-size: 18px; color: #555;">Payslip</div>
+            </div>
+            
+            <div style="margin-bottom: 20px; font-size: 16px; font-weight: bold;">
+                <div style="margin-bottom: 8px;">ประจำเดือน (Month/Year): <span id="out-month" style="font-weight: normal;">-</span></div>
+                <div style="margin-bottom: 8px;">ชื่อพนักงาน (Employee Name): <span id="out-name" style="font-weight: normal;">ไม่ระบุชื่อ</span></div>
+                <div>ตำแหน่ง (Position): <span id="out-position" style="font-weight: normal;">-</span></div>
+            </div>
+
+            <table class="pdf-table">
+                <thead>
+                    <tr><th style="width: 50%;">รายได้ (Earnings)</th><th style="width: 50%;">รายการหัก (Deductions)</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><div style="display: flex; justify-content: space-between;"><span>เงินเดือน (Basic Salary):</span><span id="out-base" class="amount">0.00</span></div></td>
+                        <td><div style="display: flex; justify-content: space-between;"><span>ประกันสังคม (Social Security):</span><span id="out-ss" class="amount">0.00</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><div style="display: flex; justify-content: space-between;"><span>ค่าล่วงเวลา (Overtime/OT):</span><span id="out-ot" class="amount">0.00</span></div></td>
+                        <td><div style="display: flex; justify-content: space-between;"><span>ภาษี (Tax):</span><span id="out-tax" class="amount">0.00</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><div style="display: flex; justify-content: space-between;"><span>ค่าคอมมิชชัน / โบนัส (Commission):</span><span id="out-bonus" class="amount">0.00</span></div></td>
+                        <td><div style="display: flex; justify-content: space-between;"><span>หักขาดงาน (Absent):</span><span id="out-absent" class="amount">0.00</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><div style="display: flex; justify-content: space-between;"><span>อื่นๆ (Others):</span><span id="out-other" class="amount">0.00</span></div></td>
+                        <td><div style="display: flex; justify-content: space-between;"><span>หักมาสาย (Late):</span><span id="out-late" class="amount">0.00</span></div></td>
+                    </tr>
+                    <tr class="pdf-total-row">
+                        <td><div style="display: flex; justify-content: space-between;"><span>รวมรายได้ (Total Earnings):</span><span id="out-total-earn" class="amount">0.00</span></div></td>
+                        <td><div style="display: flex; justify-content: space-between;"><span>รวมรายการหัก (Total Deductions):</span><span id="out-total-deduct" class="amount">0.00</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="background-color: #e6f0ff; border: 2px solid black; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; color: black;">
+                เงินรับสุทธิ (Net Pay): <span id="out-net" style="color: #1a73e8;">0.00</span> บาท (THB)
+            </div>
+            <div style="text-align: right; margin-top: 50px; margin-bottom: 20px; font-size: 16px;">
+                ผู้จ่ายเงิน (Authorized Signature) ___________________________
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // ===== INITIAL STATE & PERSISTENCE =====
+        let employees = [
+            { name: 'สมชาย ใจดี', user: 'admin', pass: '1234', role: 'admin', pos: 'ผู้จัดการฝ่ายขาย', dept: 'ฝ่ายขาย', sal: 45000, start: '2020-03-01', status: 'active' },
+            { name: 'สุดา รักงาน', user: 'suda', pass: '1234', role: 'emp', pos: 'นักขาย', dept: 'ฝ่ายขาย', sal: 28000, start: '2022-06-15', status: 'active' },
+            { name: 'วิชัย มุ่งมั่น', user: 'wichai', pass: '1234', role: 'emp', pos: 'นักการตลาด', dept: 'การตลาด', sal: 32000, start: '2021-01-10', status: 'probation' }
+        ];
+
+        let packages = [
+            { id: 'PKG001', name: 'แพ็คเกจบรอนซ์', price: 5000, com: 8, comCase: 100, desc: 'เหมาะสำหรับลูกค้าใหม่' },
+            { id: 'PKG002', name: 'แพ็คเกจซิลเวอร์', price: 10000, com: 10, comCase: 250, desc: 'แพ็คเกจยอดนิยม' },
+            { id: 'PKG003', name: 'แพ็คเกจโกลด์', price: 20000, com: 12, comCase: 500, desc: 'แพ็คเกจพรีเมียม' },
+            { id: 'PKG004', name: 'แพ็คเกจแพลทินัม', price: 50000, com: 15, comCase: 1000, desc: 'แพ็คเกจสูงสุด' }
+        ];
+
+        let rules = { absent: 500, late1: 30, late2: 50, late3: 100, sick: 30, personal: 3, sso: 5, sal3: 3, ot: 1.5 };
+        let lateLogs = [];
+        let submissions = []; 
+        let payslips = []; 
+        
+        let selectedComItems = [];
+        let selectedEsItems = []; 
+        let editEmpIdx = null;
+        let editPkgIdx = null;
+        let currentCalculatedPay = null; 
+        let currentUser = null; 
+        
+        window.commissionStore = {};
+        window.otherIncomeStore = {};
+
+        function saveAll() {
+            const data = { employees, packages, rules, lateLogs, submissions, payslips, commissionStore: window.commissionStore, otherIncomeStore: window.otherIncomeStore };
+            localStorage.setItem('songlay_hr_data', JSON.stringify(data));
+        }
+
+        function loadAll() {
+            const saved = localStorage.getItem('songlay_hr_data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.employees) employees = data.employees;
+                    if (data.packages) packages = data.packages;
+                    if (data.rules) rules = data.rules;
+                    if (data.lateLogs) lateLogs = data.lateLogs;
+                    if (data.submissions) submissions = data.submissions;
+                    if (data.payslips) payslips = data.payslips;
+                    if (data.commissionStore) window.commissionStore = data.commissionStore;
+                    if (data.otherIncomeStore) window.otherIncomeStore = data.otherIncomeStore;
+                } catch (e) { console.error("Error loading data", e); }
+            }
+        }
+
+        // ===== LOGIN LOGIC =====
+        function doLogin() {
+            // ดึงค่าและแปลงเป็นตัวพิมพ์เล็กทั้งหมดเพื่อป้องกันปัญหาพิมพ์ A ใหญ่/เล็ก และตัดช่องว่าง
+            const user = document.getElementById('login-user').value.trim().toLowerCase();
+            const pass = document.getElementById('login-pass').value.trim();
+            const err = document.getElementById('login-err');
+
+            // ตรวจสอบข้อมูลแบบไม่สนใจตัวพิมพ์เล็ก/ใหญ่ (Case-insensitive)
+            const found = employees.find(e => (e.user || '').toLowerCase() === user && e.pass === pass);
+            
+            if (found) {
+                currentUser = { name: found.name, role: found.role, idx: employees.indexOf(found) };
+                err.style.display = 'none';
+                initSession();
+            } else { 
+                err.style.display = 'block'; 
+            }
+        }
+
+        function initSession() {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('sidebar').style.display = 'flex';
+            document.querySelector('.main-content').style.display = 'block';
+            document.getElementById('current-user-display').innerText = currentUser.name;
+
+            if (currentUser.role === 'admin') {
+                document.getElementById('admin-nav').style.display = 'block';
+                document.getElementById('emp-nav').style.display = 'none';
+                switchTab('dashboard'); updatePendingBadge();
+            } else {
+                document.getElementById('admin-nav').style.display = 'none';
+                document.getElementById('emp-nav').style.display = 'block';
+                switchTab('emp-sales');
+            }
+        }
+
+        function doLogout() {
+            currentUser = null;
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('sidebar').style.display = 'none';
+            document.querySelector('.main-content').style.display = 'none';
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+        }
+
+        function updatePendingBadge() {
+            const count = submissions.filter(s => s.status === 'pending').length;
+            const badge = document.getElementById('pending-badge');
+            if (count > 0) { badge.innerText = count; badge.style.display = 'inline-block'; } 
+            else { badge.style.display = 'none'; }
+        }
+
+        // ===== HELPERS =====
+        function fmt(n) { return Number(n).toLocaleString('th-TH'); }
+        function fmt2(n) { return Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+        const statusMap = {
+            active: '<span class="badge active">ทำงานอยู่</span>',
+            leave: '<span class="badge leave">ลาออก</span>',
+            probation: '<span class="badge probation">ทดลองงาน</span>'
+        };
+
+        const attTypeMap = {
+            '1': 'สาย 1-10 นาที',
+            '2': 'สาย 11-30 นาที',
+            '3': 'สาย 31-60 นาที',
+            '4': '<span class="text-red">สาย >60 นาที (ขาดงาน)</span>'
+        };
+
+        // ===== NAVIGATION =====
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('menu-icon');
+            sidebar.classList.toggle('open');
+            if (sidebar.classList.contains('open')) { icon.classList.replace('ti-menu-2', 'ti-x'); } 
+            else { icon.classList.replace('ti-x', 'ti-menu-2'); }
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            const target = document.getElementById('tab-' + tabId);
+            if (target) target.classList.add('active');
+            
+            if(element) { element.classList.add('active'); } 
+            else {
+                document.querySelectorAll('.nav-item').forEach(n => {
+                    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(`'${tabId}'`)) {
+                        n.classList.add('active');
+                    }
+                });
+            }
+
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth <= 768 && sidebar.classList.contains('open')) { toggleSidebar(); }
+            
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'employees') renderEmployees();
+            if (tabId === 'attendance') renderAttendance();
+            if (tabId === 'rules') renderRules();
+            if (tabId === 'packages') renderPackages();
+            if (tabId === 'approvals') renderApprovals();
+            if (tabId === 'emp-sales') renderEmpSales();
+            if (tabId === 'payroll') {
+                fillPaySelects();
+                document.getElementById('btn-generate-pdf').style.display = 'none';
+                document.getElementById('payslip-preview-ui').innerHTML = '';
+            }
+        }
+
+        // ===== DASHBOARD =====
+        function renderDashboard() {
+            const active = employees.filter(e => e.status === 'active').length;
+            const totalSal = employees.reduce((a, e) => a + e.sal, 0);
+            
+            document.getElementById('emp-stats').innerHTML = `
+                <div class="stat-card"><div class="stat-label">พนักงานทั้งหมด</div><div class="stat-value">${employees.length} <span style="font-size:14px;color:var(--text-muted)">คน</span></div></div>
+                <div class="stat-card"><div class="stat-label">พนักงานที่ Active</div><div class="stat-value" style="color: var(--success);">${active} <span style="font-size:14px;color:var(--text-muted)">คน</span></div></div>
+                <div class="stat-card"><div class="stat-label">ยอดรออนุมัติ</div><div class="stat-value" style="color: var(--warning);">${submissions.filter(s=>s.status==='pending').length} <span style="font-size:14px;color:var(--text-muted)">รายการ</span></div></div>
+                <div class="stat-card"><div class="stat-label">งบเงินเดือน (ฐาน)</div><div class="stat-value" style="color: var(--accent);">${fmt(totalSal)} <span style="font-size:14px;color:var(--text-muted)">฿</span></div></div>
+            `;
+        }
+
+        // ===== EMPLOYEES =====
+        function renderEmployees() {
+            const wrap = document.getElementById('emp-table-wrap');
+            wrap.innerHTML = `<table>
+                <thead><tr><th>ชื่อ-นามสกุล</th><th>ตำแหน่ง / แผนก</th><th>User/Pass</th><th>เงินเดือนฐาน</th><th>สถานะ</th><th style="text-align:right;">จัดการ</th></tr></thead>
+                <tbody>${employees.map((e, i) => `
+                    <tr>
+                        <td><div style="font-weight:600; color:white;">${e.name}</div></td>
+                        <td><div>${e.pos}</div><div style="font-size:12px;color:var(--text-muted)">${e.dept || '-'}</div></td>
+                        <td><div style="font-size:12px;">U: ${e.user}</div><div style="font-size:12px;">P: ${e.pass}</div></td>
+                        <td style="color:var(--success); font-weight:500;">${fmt(e.sal)} ฿</td>
+                        <td>${statusMap[e.status]}</td>
+                        <td style="text-align:right;">
+                            <button class="btn btn-sm btn-secondary" onclick="editEmp(${i})"><i class="ti ti-edit"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="delEmp(${i})"><i class="ti ti-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('')}</tbody>
+            </table>`;
+        }
+
+        function openModal(id, e) {
+            if(id === 'modal-emp' && e && !e.target.closest('.btn-secondary')) {
+                editEmpIdx = null;
+                document.getElementById('modal-emp-title').innerHTML = '<i class="ti ti-user-plus"></i> เพิ่มพนักงานใหม่';
+                ['e-name','e-pos','e-dept','e-sal','e-start','e-user','e-pass'].forEach(x => { if(document.getElementById(x)) document.getElementById(x).value = ''; });
+                document.getElementById('e-status').value = 'active';
+                document.getElementById('e-role').value = 'emp';
+            }
+            if(id === 'modal-pkg' && e && !e.target.closest('.btn-secondary')) {
+                editPkgIdx = null;
+                document.getElementById('modal-pkg-title').innerHTML = '<i class="ti ti-square-plus"></i> เพิ่มแพ็คเกจใหม่';
+                ['p-name','p-price','p-desc'].forEach(x => document.getElementById(x).value = '');
+                document.getElementById('p-com').value = '0';
+                document.getElementById('p-com-case').value = '0';
+            }
+            document.getElementById(id).classList.add('open');
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        function editEmp(i) {
+            editEmpIdx = i; const e = employees[i];
+            openModal('modal-emp', null);
+            document.getElementById('modal-emp-title').innerHTML = '<i class="ti ti-edit"></i> แก้ไขข้อมูลพนักงาน';
+            document.getElementById('e-name').value = e.name; document.getElementById('e-pos').value = e.pos;
+            document.getElementById('e-dept').value = e.dept || ''; document.getElementById('e-sal').value = e.sal;
+            document.getElementById('e-start').value = e.start || ''; document.getElementById('e-status').value = e.status;
+            document.getElementById('e-user').value = e.user || ''; document.getElementById('e-pass').value = e.pass || '';
+            document.getElementById('e-role').value = e.role || 'emp';
+        }
+
+        function saveEmp() {
+            const name = document.getElementById('e-name').value.trim();
+            const pos = document.getElementById('e-pos').value.trim();
+            const sal = parseFloat(document.getElementById('e-sal').value);
+            const user = document.getElementById('e-user').value.trim();
+            const pass = document.getElementById('e-pass').value.trim();
+            const role = document.getElementById('e-role').value;
+
+            if (!name || !pos || isNaN(sal) || !user || !pass) return alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+            
+            const emp = { 
+                name, pos, dept: document.getElementById('e-dept').value, sal, 
+                start: document.getElementById('e-start').value, status: document.getElementById('e-status').value, user, pass, role
+            };
+            if (editEmpIdx !== null) employees[editEmpIdx] = emp; else employees.push(emp);
+            saveAll(); closeModal('modal-emp'); renderEmployees(); renderDashboard(); 
+        }
+
+        function delEmp(i) {
+            if (confirm(`ลบพนักงาน ${employees[i].name}?`)) { employees.splice(i, 1); saveAll(); renderEmployees(); renderDashboard(); }
+        }
+
+        // ===== EMPLOYEE SALES ENTRY =====
+        function renderEmpSales() {
+            const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const d = new Date();
+            document.getElementById('es-month').value = `${monthNames[d.getMonth()]} ${d.getFullYear() + 543}`;
+            document.getElementById('es-pkg').innerHTML = '<option value="">-- เลือกแพ็คเกจ --</option>' + packages.map(p => `<option value="${p.id}">${p.name} (${fmt(p.price)}฿)</option>`).join('');
+            renderEsItems(); renderEsHistory();
+        }
+
+        function addEsItem() {
+            const pid = document.getElementById('es-pkg').value;
+            const qty = parseInt(document.getElementById('es-qty').value) || 1;
+            if(!pid) return alert('กรุณาเลือกแพ็คเกจก่อน');
+            selectedEsItems.push({ ...packages.find(p => p.id === pid), qty });
+            renderEsItems();
+        }
+
+        function renderEsItems() {
+            const wrap = document.getElementById('es-items-wrap');
+            if(!wrap) return;
+            if(!selectedEsItems.length) { wrap.innerHTML=''; return; }
+            wrap.innerHTML = `<div class="result-box" style="margin-top:1rem;"><div style="font-weight:600; margin-bottom:10px; color:var(--primary);">รายการยอดขายที่เพิ่ม:</div>
+                ${selectedEsItems.map((item, i) => `<div class="com-row"><span>${item.name} (x${item.qty})</span><div style="display:flex; gap:15px; align-items:center;">
+                    <span style="color:var(--success); font-weight:500;">${fmt(item.price * item.qty)} ฿</span>
+                    <span style="color:var(--text-muted); font-size:12px;">คอม ~${fmt2((item.price*item.qty*(item.com/100))+((item.comCase||0)*item.qty))} ฿</span>
+                    <i class="ti ti-x" style="color:var(--danger); cursor:pointer;" onclick="selectedEsItems.splice(${i},1); renderEsItems();"></i>
+                </div></div>`).join('')}</div>`;
+        }
+
+        function calcAndShowEsSummary() {
+            if(!selectedEsItems.length) return alert('กรุณาเพิ่มรายการขายก่อน');
+            let totalSales=0, totalCom=0;
+            selectedEsItems.forEach(item => {
+                totalSales += item.price * item.qty;
+                totalCom += (item.price * item.qty * (item.com/100)) + ((item.comCase||0) * item.qty);
+            });
+            const box = document.getElementById('es-summary-box');
+            box.style.display = 'block';
+            box.innerHTML = `<div style="font-weight:600; color:var(--primary); margin-bottom:10px;"><i class="ti ti-calculator"></i> สรุปการคำนวณเบื้องต้น</div>
+                <div class="com-row"><span>ยอดขายรวม</span><span style="color:var(--text-main);">${fmt2(totalSales)} ฿</span></div>
+                <div class="com-row" style="font-weight:bold;"><span>ค่าคอมมิชชันโดยประมาณ</span><span style="color:var(--success); font-size:18px;">${fmt2(totalCom)} ฿</span></div>
+                <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">* ยอดค่าคอมจะถูกคำนวณอย่างเป็นทางการเมื่อ Admin อนุมัติ</div>`;
+        }
+
+        function clearEsItems() { 
+            selectedEsItems = []; renderEsItems(); 
+            const box = document.getElementById('es-summary-box');
+            if(box) { box.style.display='none'; box.innerHTML=''; }
+        }
+
+        function submitEs() {
+            if (!selectedEsItems.length) return alert('กรุณาระบุยอดขาย');
+            const month = document.getElementById('es-month').value;
+            const alreadySent = submissions.find(s => s.empIdx === currentUser.idx && s.month === month && s.status === 'pending');
+            if (alreadySent) return alert('คุณได้ส่งยอดขายเดือนนี้แล้ว รอ Admin อนุมัติ');
+
+            submissions.push({ empIdx: currentUser.idx, month, items: JSON.parse(JSON.stringify(selectedEsItems)), manualCom: 0, otherIncome: 0, status: 'pending', submittedAt: new Date().toISOString() });
+            saveAll(); clearEsItems(); renderEsHistory();
+            alert('✅ ส่งข้อมูลเรียบร้อยแล้ว รอการอนุมัติจาก Admin');
+        }
+
+        function renderEsHistory() {
+            const wrap = document.getElementById('es-history-wrap');
+            if(!wrap) return;
+            const mySubmissions = submissions.filter(s => s.empIdx === currentUser.idx).sort((a,b) => b.submittedAt.localeCompare(a.submittedAt));
+            if(!mySubmissions.length) { wrap.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px;">ยังไม่มีประวัติการส่งยอด</p>'; return; }
+
+            const sMap = { pending: ['⏳ รออนุมัติ', 'var(--warning)'], approved: ['✅ อนุมัติแล้ว', 'var(--success)'], rejected: ['❌ ถูกปฏิเสธ', 'var(--danger)'] };
+            wrap.innerHTML = `<div style="overflow-x:auto;"><table><thead><tr><th>เดือน</th><th>รายการ</th><th>ยอดคอมฯ</th><th>สถานะ</th><th>วันที่ส่ง</th></tr></thead>
+                <tbody>${mySubmissions.map(s => {
+                    let tc = s.manualCom || 0; s.items.forEach(item => { tc += (item.price*item.qty*(item.com/100))+((item.comCase||0)*item.qty); });
+                    const [sLabel, sColor] = sMap[s.status] || ['ไม่ทราบ','gray'];
+                    return `<tr><td><strong>${s.month}</strong></td><td style="font-size:12px; max-width:180px;">${s.items.map(i=>`${i.name} x${i.qty}`).join(', ')||'-'}</td>
+                        <td style="color:var(--success); font-weight:600;">${fmt2(tc)} ฿</td><td><span style="color:${sColor}; font-weight:500;">${sLabel}</span></td>
+                        <td style="color:var(--text-muted); font-size:12px;">${new Date(s.submittedAt).toLocaleDateString('th-TH')}</td></tr>`;
+                }).join('')}</tbody></table></div>`;
+        }
+
+        // ===== ADMIN APPROVALS =====
+        function renderApprovals() {
+            const wrap = document.getElementById('approval-table-wrap');
+            const pending = submissions.filter(s => s.status === 'pending');
+            if (!pending.length) { wrap.innerHTML = '<p style="color:var(--text-muted); padding:20px; text-align:center;">ไม่มีรายการรออนุมัติ</p>'; return; }
+            
+            wrap.innerHTML = `<table><thead><tr><th>พนักงาน</th><th>เดือน</th><th>รายละเอียด</th><th>ยอดคอมฯ</th><th style="text-align:right;">จัดการ</th></tr></thead>
+                <tbody>${pending.map(s => {
+                    let tc = s.manualCom; s.items.forEach(item => { tc += (item.price*item.qty*(item.com/100))+((item.comCase||0)*item.qty); });
+                    const gIdx = submissions.indexOf(s);
+                    return `<tr><td><div style="font-weight:600;">${employees[s.empIdx].name}</div></td><td>${s.month}</td>
+                        <td style="font-size:12px;">${s.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</td><td style="color:var(--success);">${fmt2(tc)} ฿</td>
+                        <td style="text-align:right; white-space:nowrap;">
+                            <button class="btn btn-sm btn-primary" onclick="approveSub(${gIdx}, true)"><i class="ti ti-check"></i> อนุมัติ</button>
+                            <button class="btn btn-sm btn-danger" onclick="approveSub(${gIdx}, false)"><i class="ti ti-x"></i></button>
+                        </td></tr>`;
+                }).join('')}</tbody></table>`;
+        }
+
+        function approveSub(idx, isApprove) {
+            const s = submissions[idx]; s.status = isApprove ? 'approved' : 'rejected';
+            if (isApprove) {
+                let tc = s.manualCom; s.items.forEach(item => { tc += (item.price*item.qty*(item.com/100))+((item.comCase||0)*item.qty); });
+                window.commissionStore[s.empIdx] = tc; window.otherIncomeStore[s.empIdx] = s.otherIncome;
+            }
+            saveAll(); renderApprovals(); updatePendingBadge(); renderDashboard();
+        }
+
+        // ===== ATTENDANCE =====
+        function renderAttendance() {
+            document.getElementById('att-emp').innerHTML = '<option value="">-- เลือกพนักงาน --</option>' + employees.map((e,i) => `<option value="${i}">${e.name}</option>`).join('');
+            document.getElementById('att-date').value = new Date().toISOString().split('T')[0];
+            const wrap = document.getElementById('att-table-wrap');
+            if(!lateLogs.length) { wrap.innerHTML = '<p style="color:var(--text-muted); padding:20px; text-align:center;">ยังไม่มีบันทึกการมาสาย</p>'; return; }
+            wrap.innerHTML = `<table><thead><tr><th>วันที่</th><th>ชื่อพนักงาน</th><th>ประเภทการสาย</th><th style="text-align:right;">จัดการ</th></tr></thead>
+                <tbody>${lateLogs.sort((a,b) => b.date.localeCompare(a.date)).map((log, i) => `<tr><td>${log.date}</td><td><div style="font-weight:600;">${employees[log.empIdx] ? employees[log.empIdx].name : '-'}</div></td><td>${attTypeMap[log.type]}</td><td style="text-align:right;"><button class="btn btn-sm btn-danger" onclick="delAttendance(${i})"><i class="ti ti-trash"></i></button></td></tr>`).join('')}</tbody></table>`;
+        }
+        function addAttendance() {
+            const empIdx = document.getElementById('att-emp').value, date = document.getElementById('att-date').value, type = document.getElementById('att-type').value;
+            if(empIdx === '' || !date) return alert('กรุณาเลือกพนักงานและวันที่');
+            lateLogs.push({ empIdx: parseInt(empIdx), date, type }); saveAll(); renderAttendance();
+        }
+        function delAttendance(i) { if(confirm('ลบบันทึกนี้?')) { lateLogs.splice(i, 1); saveAll(); renderAttendance(); } }
+
+        // ===== RULES =====
+        function renderRules() {
+            ['absent','late1','late2','late3','sick','personal','sso','sal3','ot'].forEach(k => document.getElementById(`r-${k}`).value = rules[k]);
+        }
+        function saveRules() {
+            ['absent','late1','late2','late3','sick','personal','sso','sal3','ot'].forEach(k => rules[k] = parseFloat(document.getElementById(`r-${k}`).value) || 0);
+            if(!rules.ot) rules.ot = 1.5; saveAll();
+            const btn = document.getElementById('save-rules-btn'); btn.innerHTML = '<i class="ti ti-check"></i> บันทึกสำเร็จ'; btn.style.background = 'var(--success)';
+            setTimeout(() => { btn.innerHTML = '<i class="ti ti-device-floppy"></i> บันทึกกฎ'; btn.style.background = ''; }, 2000);
+        }
+
+        // ===== PACKAGES & COM =====
+        function renderPackages() {
+            document.getElementById('pkg-grid').innerHTML = packages.sort((a,b)=>b.price-a.price).map((p, i) => `
+                <div class="pkg-card ${i===0?'featured':''}">${i===0 ? '<div class="pkg-rank">Top Tier</div>' : ''}
+                    <div class="pkg-name">${p.name}</div><div class="pkg-price">${fmt(p.price)} ฿</div>
+                    <div class="pkg-com"><i class="ti ti-percentage"></i> คอมมิชชัน: <strong style="color:white">${p.com}%</strong></div>
+                    <div class="pkg-com"><i class="ti ti-cash"></i> ต่อเคส: <strong style="color:white">${fmt(p.comCase || 0)} ฿</strong></div>
+                    <div style="font-size:12px; color:var(--text-muted); margin-bottom:15px; height: 36px; overflow:hidden;">${p.desc}</div>
+                    <div style="display:flex; gap:8px;"><button class="btn btn-sm btn-secondary" onclick="editPkg('${p.id}')" style="flex:1;"><i class="ti ti-edit"></i></button><button class="btn btn-sm btn-danger" onclick="delPkg('${p.id}')"><i class="ti ti-trash"></i></button></div>
+                </div>`).join('');
+            fillComSelects();
+        }
+        function editPkg(id) {
+            editPkgIdx = packages.findIndex(p => p.id === id); const p = packages[editPkgIdx];
+            document.getElementById('modal-pkg-title').innerHTML = '<i class="ti ti-edit"></i> แก้ไขแพ็คเกจ';
+            ['p-name','p-price','p-com','p-desc'].forEach(k => document.getElementById(k).value = p[k.split('-')[1]]);
+            document.getElementById('p-com-case').value = p.comCase || 0; document.getElementById('modal-pkg').classList.add('open');
+        }
+        function savePkg() {
+            const name = document.getElementById('p-name').value.trim(), price = parseFloat(document.getElementById('p-price').value);
+            if (!name || isNaN(price)) return alert('กรอกข้อมูลไม่ครบถ้วน');
+            const pkg = { id: editPkgIdx !== null ? packages[editPkgIdx].id : 'PKG'+Date.now(), name, price, com: parseFloat(document.getElementById('p-com').value)||0, comCase: parseFloat(document.getElementById('p-com-case').value)||0, desc: document.getElementById('p-desc').value };
+            if(editPkgIdx !== null) packages[editPkgIdx] = pkg; else packages.push(pkg);
+            saveAll(); closeModal('modal-pkg'); renderPackages();
+        }
+        function delPkg(id) { if(confirm('ลบแพ็คเกจนี้?')) { packages = packages.filter(x => x.id !== id); saveAll(); renderPackages(); } }
+        function fillComSelects() {
+            document.getElementById('com-emp').innerHTML = '<option value="">-- เลือกเซลล์ --</option>' + employees.map((e,i) => `<option value="${i}">${e.name}</option>`).join('');
+            document.getElementById('com-pkg').innerHTML = '<option value="">-- เลือกแพ็คเกจ --</option>' + packages.map(p => `<option value="${p.id}">${p.name} (${fmt(p.price)}฿)</option>`).join('');
+        }
+        function addComItem() {
+            const pid = document.getElementById('com-pkg').value, qty = parseInt(document.getElementById('com-qty').value) || 1;
+            if(!pid) return; selectedComItems.push({ ...packages.find(p => p.id === pid), qty }); renderComItems();
+        }
+        function renderComItems() {
+            const wrap = document.getElementById('com-items-wrap'); if(!selectedComItems.length) { wrap.innerHTML=''; return; }
+            wrap.innerHTML = `<div class="result-box"><div style="font-weight:600; margin-bottom:10px;">รายการที่รอคำนวณ:</div>${selectedComItems.map((item, i) => `<div class="com-row"><span>${item.name} (x${item.qty})</span><div style="display:flex; gap:15px;"><span style="color:var(--success)">+${fmt(item.price * item.qty)} ฿</span><i class="ti ti-x" style="color:var(--danger); cursor:pointer;" onclick="selectedComItems.splice(${i},1); renderComItems();"></i></div></div>`).join('')}</div>`;
+        }
+        function clearComItems() { selectedComItems = []; renderComItems(); document.getElementById('com-result').innerHTML = ''; }
+        function calcCom() {
+            const ei = document.getElementById('com-emp').value; if(ei==='' || !selectedComItems.length) return alert('กรุณาเลือกเซลล์และเพิ่มรายการขาย');
+            let totalCom=0, html = `<div class="result-box"><div style="font-weight:600; color:var(--primary); font-size:16px;">สรุปค่าคอมเซลล์: ${employees[ei].name}</div>`;
+            selectedComItems.forEach(item => {
+                const c = (item.price * item.qty * (item.com/100)) + ((item.comCase || 0) * item.qty); totalCom += c;
+                html += `<div class="com-row"><span>ยอดขาย ${item.name}</span><span>คอม = ${fmt2(c)} ฿</span></div>`;
+            });
+            html += `<div class="com-row" style="border-top:1px dashed var(--glass-border); padding-top:10px;"><span style="font-weight:bold;">รวมรับ</span><span style="font-weight:bold; color:var(--success); font-size:18px;">${fmt2(totalCom)} ฿</span></div></div>`;
+            document.getElementById('com-result').innerHTML = html; window.commissionStore[ei] = totalCom; saveAll();
+        }
+
+        // ===== PAYROLL & PDF =====
+        function fillPaySelects() {
+            document.getElementById('pay-emp').innerHTML = '<option value="">-- เลือกพนักงาน --</option>' + employees.map((e,i) => `<option value="${i}">${e.name} (${fmt(e.sal)}฿)</option>`).join('');
+            const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const d = new Date(); document.getElementById('pay-month').value = `${monthNames[d.getMonth()]} ${d.getFullYear() + 543}`;
+        }
+        function autoFillCom() {
+            const ei = document.getElementById('pay-emp').value;
+            if (ei === '') { ['pay-com', 'pay-other', 'pay-late-1', 'pay-late-2', 'pay-late-3', 'pay-late-4'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = 0; }); return; }
+            document.getElementById('pay-com').value = window.commissionStore[ei] || 0;
+            if (document.getElementById('pay-other')) document.getElementById('pay-other').value = window.otherIncomeStore[ei] || 0;
+            
+            const payMonthInput = document.getElementById('pay-month').value.split(' ');
+            if (payMonthInput.length === 2) {
+                const mIdx = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"].indexOf(payMonthInput[0]);
+                const yEng = parseInt(payMonthInput[1]) - 543;
+                if (mIdx !== -1 && !isNaN(yEng)) {
+                    const logs = lateLogs.filter(log => { const d = new Date(log.date); return log.empIdx == ei && d.getMonth() === mIdx && d.getFullYear() === yEng; });
+                    [1,2,3,4].forEach(t => document.getElementById(`pay-late-${t}`).value = logs.filter(l => l.type == t).length);
+                }
+            }
+        }
+
+        function previewPayslip() {
+            let ei, month, absent, late1, late2, late3, late4, ot, com, other;
+            ei = document.getElementById('pay-emp').value; if(ei==='') return alert('กรุณาเลือกพนักงาน');
+            month = document.getElementById('pay-month').value; absent = parseInt(document.getElementById('pay-absent').value)||0;
+            late1 = parseInt(document.getElementById('pay-late-1').value)||0; late2 = parseInt(document.getElementById('pay-late-2').value)||0;
+            late3 = parseInt(document.getElementById('pay-late-3').value)||0; late4 = parseInt(document.getElementById('pay-late-4').value)||0;
+            ot = parseFloat(document.getElementById('pay-ot').value)||0; com = parseFloat(document.getElementById('pay-com').value)||0;
+            other = parseFloat(document.getElementById('pay-other').value)||0;
+
+            const emp = employees[ei]; const otPay = ot * ((emp.sal/30)/8) * rules.ot;
+            const deductAbsent = (absent + late4) * rules.absent; const deductLate = (late1 * rules.late1) + (late2 * rules.late2) + (late3 * rules.late3);
+            let sso = emp.sal * (rules.sso/100); if(emp.sal >= 17500 && rules.sso === 5) sso = 875; 
+            const tax = emp.sal * (rules.sal3/100); 
+            
+            const totalEarn = emp.sal + otPay + com + other; const totalDeduct = sso + tax + deductAbsent + deductLate; const net = totalEarn - totalDeduct;
+            currentCalculatedPay = { empIdx: parseInt(ei), empName: emp.name, empPos: emp.pos, month, base: emp.sal, ot: otPay, com, other, absent: deductAbsent, late: deductLate, sso, tax, totalEarn, totalDeduct, net };
+
+            document.getElementById('payslip-preview-ui').innerHTML = `
+                <div class="glass-card" style="border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3 style="color:var(--primary);">พรีวิวสลิปเงินเดือน: ${emp.name}</h3><button class="btn btn-sm btn-success" onclick="finalizePayslip()"><i class="ti ti-check"></i> ยืนยันสลิปนี้</button>
+                    </div>
+                    <div class="form-grid">
+                        <div>
+                            <div style="font-weight:bold; color:var(--success); margin-bottom:10px;">รายรับ (Earnings)</div>
+                            <div class="com-row"><span>เงินเดือนฐาน</span><span>${fmt2(emp.sal)}</span></div>
+                            <div class="com-row"><span>ค่าล่วงเวลา (OT)</span><span>${fmt2(otPay)}</span></div>
+                            <div class="com-row"><span>ค่าคอมมิชชัน</span><span>${fmt2(com)}</span></div>
+                            <div class="com-row"><span>รายได้อื่นๆ</span><span>${fmt2(other)}</span></div>
+                            <div class="com-row" style="font-weight:bold; border-top:1px solid rgba(255,255,255,0.2); margin-top:5px; padding-top:10px;"><span>รวมรายรับ</span><span class="text-green">${fmt2(totalEarn)}</span></div>
+                        </div>
+                        <div>
+                            <div style="font-weight:bold; color:var(--danger); margin-bottom:10px;">รายการหัก (Deductions)</div>
+                            <div class="com-row"><span>ประกันสังคม</span><span>${fmt2(sso)}</span></div>
+                            <div class="com-row"><span>ภาษีหัก ณ ที่จ่าย</span><span>${fmt2(tax)}</span></div>
+                            <div class="com-row"><span>หักขาดงาน</span><span>${fmt2(deductAbsent)}</span></div>
+                            <div class="com-row"><span>หักมาสาย</span><span>${fmt2(deductLate)}</span></div>
+                            <div class="com-row" style="font-weight:bold; border-top:1px solid rgba(255,255,255,0.2); margin-top:5px; padding-top:10px;"><span>รวมรายการหัก</span><span class="text-red">${fmt2(totalDeduct)}</span></div>
+                        </div>
+                    </div>
+                    <div style="text-align:center; margin-top:20px; padding:15px; background:rgba(16, 185, 129, 0.1); border-radius:10px; border:1px solid rgba(16, 185, 129, 0.3);">
+                        <div style="font-size:14px; color:var(--text-muted);">รับสุทธิ (Net Pay)</div><div style="font-size:28px; font-weight:bold; color:var(--success);">${fmt2(net)} THB</div>
+                    </div>
+                </div>`;
+            document.getElementById('btn-generate-pdf').style.display = 'inline-flex';
+        }
+
+        function finalizePayslip() {
+            if (!currentCalculatedPay) return;
+            payslips = payslips.filter(p => !(p.empIdx === currentCalculatedPay.empIdx && p.month === currentCalculatedPay.month));
+            payslips.push(JSON.parse(JSON.stringify(currentCalculatedPay))); saveAll();
+            alert('✅ บันทึกสลิปเรียบร้อยแล้ว');
+        }
+
+        function generatePDFFromData(data, event) { currentCalculatedPay = data; generatePDF(event); }
+
+        function generatePDF(e) {
+            if(!currentCalculatedPay) return; const data = currentCalculatedPay;
+            document.getElementById('out-month').innerText = data.month || '-';
+            document.getElementById('out-name').innerText = data.empName || employees[data.empIdx].name;
+            document.getElementById('out-position').innerText = data.empPos || employees[data.empIdx].pos;
+            document.getElementById('out-base').innerText = fmt2(data.base); document.getElementById('out-ot').innerText = fmt2(data.ot);
+            document.getElementById('out-bonus').innerText = fmt2(data.com); document.getElementById('out-other').innerText = fmt2(data.other || 0);
+            document.getElementById('out-ss').innerText = fmt2(data.sso); document.getElementById('out-tax').innerText = fmt2(data.tax);
+            document.getElementById('out-absent').innerText = fmt2(data.absent); document.getElementById('out-late').innerText = fmt2(data.late);
+            document.getElementById('out-total-earn').innerText = fmt2(data.totalEarn); document.getElementById('out-total-deduct').innerText = fmt2(data.totalDeduct);
+            document.getElementById('out-net').innerText = fmt2(data.net);
+
+            const element = document.getElementById('pdf-template'), container = document.getElementById('pdf-export-container');
+            container.style.display = 'block'; 
+            
+            const opt = { margin: 10, filename: `Payslip_${(data.empName || 'User').replace(/ /g, '_')}_${data.month.replace(/ /g,'_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            const btn = e ? e.target.closest('button') : null; const oBtnText = btn ? btn.innerHTML : '';
+            if(btn) btn.innerHTML = '<i class="ti ti-loader ti-spin"></i> กำลังสร้าง PDF...';
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                container.style.display = 'none'; 
+                if(btn) { btn.innerHTML = '<i class="ti ti-check"></i> โหลด PDF สำเร็จ!'; setTimeout(() => { btn.innerHTML = oBtnText; }, 3000); }
+            });
+        }
+
+        // ===== INIT =====
+        loadAll();
+    </script>
+</body>
+</html>
