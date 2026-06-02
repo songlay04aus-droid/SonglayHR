@@ -816,8 +816,12 @@
             const pass = document.getElementById('login-pass').value.trim();
             const err = document.getElementById('login-err');
 
-            // ตรวจสอบข้อมูลแบบไม่สนใจตัวพิมพ์เล็ก/ใหญ่ (Case-insensitive)
-            const found = employees.find(e => (e.user || '').toLowerCase() === user && e.pass === pass);
+            // ตรวจสอบข้อมูลแบบไม่สนใจตัวพิมพ์เล็ก/ใหญ่ (ทั้ง Username และ ชื่อ-นามสกุล)
+            const found = employees.find(e => {
+                const uMatch = (e.user || '').toLowerCase() === user;
+                const nMatch = (e.name || '').toLowerCase() === user;
+                return (uMatch || nMatch) && String(e.pass) === pass;
+            });
             
             if (found) {
                 currentUser = { name: found.name, role: found.role, idx: employees.indexOf(found) };
@@ -1295,6 +1299,31 @@
         }
 
         // ===== INIT =====
+        function loadAll() {
+            const saved = localStorage.getItem('songlay_hr_data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    // โหลดข้อมูลพนักงาน และตรวจสอบว่าถ้าว่างให้ใช้ค่าเริ่มต้น
+                    if (data.employees && data.employees.length > 0) {
+                        employees = data.employees;
+                    }
+                    if (data.packages) packages = data.packages;
+                    if (data.rules) rules = data.rules;
+                    if (data.lateLogs) lateLogs = data.lateLogs;
+                    if (data.submissions) submissions = data.submissions;
+                    if (data.payslips) payslips = data.payslips;
+                    if (data.commissionStore) window.commissionStore = data.commissionStore;
+                    if (data.otherIncomeStore) window.otherIncomeStore = data.otherIncomeStore;
+                } catch (e) { console.error("Error loading data", e); }
+            }
+            
+            // ตรวจสอบความปลอดภัย: ถ้าไม่มี admin เลย ให้เพิ่ม admin กลับเข้าไป
+            const hasAdmin = employees.some(e => e.role === 'admin');
+            if (!hasAdmin) {
+                employees.unshift({ name: 'Admin System', user: 'admin', pass: '1234', role: 'admin', pos: 'Administrator', sal: 0, status: 'active' });
+            }
+        }
         loadAll();
     </script>
 </body>
